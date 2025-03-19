@@ -37,7 +37,7 @@ except (unittest.SkipTest, ImportError) as e:
 
 def foreach_map_wrapper(op):
     def wrapper(*args, **kwargs):
-        return foreach_map(op, (args), **kwargs)
+        return foreach_map(op, *args, **kwargs)
 
     wrapper.__name__ = "foreach_map_" + op.__name__
     wrapper.original_op = op
@@ -467,7 +467,10 @@ class ForeachTests(TestCase):
             check_lowp=False,
         )
 
-        self.assertEqual(torch._inductor.metrics.generated_kernel_count, 1)
+        kernel_count = 1
+        if "foreach_map" in op.__name__:
+            kernel_count = 2
+        self.assertEqual(torch._inductor.metrics.generated_kernel_count, kernel_count)
 
     @requires_cuda
     @all_ops
