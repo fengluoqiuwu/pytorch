@@ -1883,7 +1883,7 @@ def load_inline(name,
     the necessary header includes, as well as the (pybind11) binding code. More
     precisely, strings passed to ``cpp_sources`` are first concatenated into a
     single ``.cpp`` file. This file is then prepended with ``#include
-    <torch/extension.h>`` (unless ``no_header=True`` is specified).
+    <torch/extension.h>``
 
     Furthermore, if the ``functions`` argument is supplied, bindings will be
     automatically generated for each function specified. ``functions`` can
@@ -1908,6 +1908,8 @@ def load_inline(name,
     create a C++ function that calls it, and either declare or define this
     C++ function in one of the ``cpp_sources`` (and include its name
     in ``functions``).
+
+    
 
     See :func:`load` for a description of arguments omitted below.
 
@@ -1935,7 +1937,7 @@ def load_inline(name,
             of cpp. This flag should be set to ``False`` when this redirect
             causes issues.
         no_header: If ``True``, skips automatically adding the ``#include <torch/extension.h>``
-            line at the beginning of the file. Use this option to improve cold start times
+            and ``#include <torch/types.h>`` lines at the beginning of the file. Use this option to improve cold start times
             when you already include the necessary headers in your source code. Default: ``False``.
 
     Example:
@@ -2010,7 +2012,8 @@ def load_inline(name,
     sources = [cpp_source_path]
 
     if cuda_sources:
-        cuda_sources.insert(0, '#include <torch/types.h>')
+        if not no_header:
+            cuda_sources.insert(0, '#include <torch/types.h>')
         cuda_sources.insert(1, '#include <cuda.h>')
         cuda_sources.insert(2, '#include <cuda_runtime.h>')
 
@@ -2020,7 +2023,8 @@ def load_inline(name,
         sources.append(cuda_source_path)
 
     if sycl_sources:
-        sycl_sources.insert(0, '#include <torch/types.h>')
+        if not no_header:
+            sycl_sources.insert(0, '#include <torch/types.h>')
         sycl_sources.insert(1, '#include <sycl/sycl.hpp>')
 
         sycl_source_path = os.path.join(build_directory, 'sycl.sycl')
