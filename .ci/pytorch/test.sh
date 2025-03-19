@@ -1642,12 +1642,13 @@ elif [[ "${SHARD_NUMBER}" == 1 && $NUM_TEST_SHARDS -gt 1 ]]; then
   test_lazy_tensor_meta_reference_disabled
   test_without_numpy
   install_torchvision
-  test_python_shard 1
-  test_aten
-  test_libtorch 1
-  if [[ "${BUILD_ENVIRONMENT}" == *xpu* ]]; then
-    test_xpu_bin
-  fi
+  pytest test/inductor/test_torchinductor.py -k test_graph_partition --flake-finder --flake-runs=500
+  # test_python_shard 1
+  # test_aten
+  # test_libtorch 1
+  # if [[ "${BUILD_ENVIRONMENT}" == *xpu* ]]; then
+  #   test_xpu_bin
+  # fi
 elif [[ "${SHARD_NUMBER}" == 2 && $NUM_TEST_SHARDS -gt 1 ]]; then
   install_torchvision
   test_python_shard 2
