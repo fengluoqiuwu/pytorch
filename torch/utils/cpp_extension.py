@@ -1589,7 +1589,8 @@ def load_inline(name,
                 is_python_module=True,
                 with_pytorch_error_handling=True,
                 keep_intermediates=True,
-                use_pch=False):
+                use_pch=False,
+                no_header=False):
     r'''
     Load a PyTorch C++ extension just-in-time (JIT) from string sources.
 
@@ -1606,7 +1607,7 @@ def load_inline(name,
     the necessary header includes, as well as the (pybind11) binding code. More
     precisely, strings passed to ``cpp_sources`` are first concatenated into a
     single ``.cpp`` file. This file is then prepended with ``#include
-    <torch/extension.h>``.
+    <torch/extension.h>`` (unless ``no_header=True`` is specified).
 
     Furthermore, if the ``functions`` argument is supplied, bindings will be
     automatically generated for each function specified. ``functions`` can
@@ -1642,6 +1643,9 @@ def load_inline(name,
             function. This redirection might cause issues in obscure cases
             of cpp. This flag should be set to ``False`` when this redirect
             causes issues.
+        no_header: If ``True``, skips automatically adding the ``#include <torch/extension.h>``
+            line at the beginning of the file. Use this option to improve cold start times
+            when you already include the necessary headers in your source code. Default: ``False``.
 
     Example:
         >>> # xdoctest: +REQUIRES(env:TORCH_DOCTEST_CPP_EXT)
@@ -1676,7 +1680,9 @@ def load_inline(name,
     if isinstance(cuda_sources, str):
         cuda_sources = [cuda_sources]
 
-    cpp_sources.insert(0, '#include <torch/extension.h>')
+    # Only include the header if not explicitly disabled
+    if not no_header:
+        cpp_sources.insert(0, '#include <torch/extension.h>')
 
     if use_pch is True:
         # Using PreCompile Header('torch/extension.h') to reduce compile time.
