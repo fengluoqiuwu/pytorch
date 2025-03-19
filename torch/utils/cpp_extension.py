@@ -1680,7 +1680,6 @@ def load_inline(name,
     if isinstance(cuda_sources, str):
         cuda_sources = [cuda_sources]
 
-    # Only include the header if not explicitly disabled
     if not no_header:
         cpp_sources.insert(0, '#include <torch/extension.h>')
 

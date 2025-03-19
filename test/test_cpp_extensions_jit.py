@@ -1031,7 +1031,6 @@ class TestCppExtensionJIT(common.TestCase):
             self.assertEqual(signature_exist, True)
 
     def test_no_header_mode(self):
-        # Test the no_header mode in load_inline, which skips adding torch/extension.h include
         source_with_header = """
         #include <torch/extension.h>
         
@@ -1054,7 +1053,6 @@ class TestCppExtensionJIT(common.TestCase):
         z = module.sin_add(x, y)
         self.assertEqual(z, x.sin() + y.sin())
 
-        # Test that the function fails if we try to use no_header without including the header ourselves
         source_without_header = """
         torch::Tensor sin_add(torch::Tensor x, torch::Tensor y) {
             return x.sin() + y.sin();
