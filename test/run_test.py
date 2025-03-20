@@ -1627,6 +1627,8 @@ def handle_log_file(
         f"{test}_{os.urandom(8).hex()}_.log"
     )
     os.rename(file_path, REPO_ROOT / new_file)
+    # assert that the file was renamed
+    assert os.path.exists(REPO_ROOT / new_file), f"Failed to rename {file_path} to {new_file}"
 
     if not failed and not was_rerun and "=== RERUNS ===" not in full_text:
         # If success + no retries (idk how else to check for test level retries
