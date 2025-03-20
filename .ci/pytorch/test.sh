@@ -1705,4 +1705,4 @@ else
   test_torch_function_benchmark
   test_benchmarks
 fi
-find test/test-reports -name "*.log" -type f | grep -q . || echo "No log files found" && exit 1
+find test/test-reports -name "*.log" -type f | grep -q . || (echo "No log files found" && exit 1)
