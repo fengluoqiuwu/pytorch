@@ -1866,7 +1866,7 @@ def load_inline(name,
                 with_pytorch_error_handling=True,
                 keep_intermediates=True,
                 use_pch=False,
-                no_header=False):
+                no_implicit_headers=False):
     r'''
     Load a PyTorch C++ extension just-in-time (JIT) from string sources.
 
@@ -1936,7 +1936,7 @@ def load_inline(name,
             function. This redirection might cause issues in obscure cases
             of cpp. This flag should be set to ``False`` when this redirect
             causes issues.
-        no_header: If ``True``, skips automatically adding the ``#include <torch/extension.h>``
+        no_implicit_headers: If ``True``, skips automatically adding the ``#include <torch/extension.h>``
             and ``#include <torch/types.h>`` lines at the beginning of the file. Use this option to improve cold start times
             when you already include the necessary headers in your source code. Default: ``False``.
 
@@ -1976,7 +1976,7 @@ def load_inline(name,
     if isinstance(sycl_sources, str):
         sycl_sources = [sycl_sources]
 
-    if not no_header:
+    if not no_implicit_headers:
         cpp_sources.insert(0, '#include <torch/extension.h>')
 
     if use_pch is True:
@@ -2012,10 +2012,10 @@ def load_inline(name,
     sources = [cpp_source_path]
 
     if cuda_sources:
-        if not no_header:
+        if not no_implicit_headers:
             cuda_sources.insert(0, '#include <torch/types.h>')
-        cuda_sources.insert(1, '#include <cuda.h>')
-        cuda_sources.insert(2, '#include <cuda_runtime.h>')
+            cuda_sources.insert(1, '#include <cuda.h>')
+            cuda_sources.insert(2, '#include <cuda_runtime.h>')
 
         cuda_source_path = os.path.join(build_directory, 'cuda.cu')
         _maybe_write(cuda_source_path, "\n".join(cuda_sources))
@@ -2023,9 +2023,9 @@ def load_inline(name,
         sources.append(cuda_source_path)
 
     if sycl_sources:
-        if not no_header:
+        if not no_implicit_headers:
             sycl_sources.insert(0, '#include <torch/types.h>')
-        sycl_sources.insert(1, '#include <sycl/sycl.hpp>')
+            sycl_sources.insert(1, '#include <sycl/sycl.hpp>')
 
         sycl_source_path = os.path.join(build_directory, 'sycl.sycl')
         _maybe_write(sycl_source_path, "\n".join(sycl_sources))
